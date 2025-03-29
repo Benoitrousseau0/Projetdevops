@@ -13,4 +13,5 @@ class Commentaire(Base):
     id_utilisateur = Column(Integer, ForeignKey("utilisateur.id", ondelete="CASCADE"), nullable=False)
 
     ticket = relationship("Ticket", back_populates="commentaires")
+    utilisateur = relationship("Utilisateur", back_populates="commentaires")
     utilisateur = relationship("Utilisateur")

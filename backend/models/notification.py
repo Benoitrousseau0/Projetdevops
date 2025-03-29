@@ -13,5 +13,5 @@ class Notification(Base):
     id_ticket = Column(Integer, ForeignKey("ticket.id", ondelete="SET NULL"), nullable=True)
     lu = Column(Boolean, default=False)
 
-    utilisateur = relationship("Utilisateur")
+    utilisateur = relationship("Utilisateur", back_populates="notifications")
     ticket = relationship("Ticket", back_populates="notifications")

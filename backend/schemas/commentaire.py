@@ -15,3 +15,6 @@ class CommentaireOut(CommentaireBase):
 
     class Config:
         orm_mode = True
+
+class CommentaireUpdate(BaseModel):
+    contenu: str

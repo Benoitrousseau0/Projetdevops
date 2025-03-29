@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Enum, DateTime
 from datetime import datetime
 from core.database import Base
 import enum
+from sqlalchemy.orm import relationship
 
 class RoleEnum(str, enum.Enum):
     employe = "employe"
@@ -17,3 +18,6 @@ class Utilisateur(Base):
     mot_de_passe = Column(String(255), nullable=False)
     role = Column(Enum(RoleEnum), nullable=False)
     date_inscription = Column(DateTime, default=datetime.utcnow)
+
+    notifications = relationship("Notification", back_populates="utilisateur", cascade="all, delete-orphan")
+

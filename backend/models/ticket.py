@@ -29,6 +29,6 @@ class Ticket(Base):
     id_employe = Column(Integer, ForeignKey("utilisateur.id", ondelete="CASCADE"), nullable=False)
 
     employe = relationship("Utilisateur")
-    techniciens = relationship("TicketTechnicien", back_populates="ticket", cascade="all, delete")
-    commentaires = relationship("Commentaire", back_populates="ticket", cascade="all, delete")
-    notifications = relationship("Notification", back_populates="ticket", cascade="all, delete")
+    commentaires = relationship("Commentaire", back_populates="ticket", cascade="all, delete-orphan")
+    techniciens = relationship("TicketTechnicien", back_populates="ticket", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="ticket", cascade="all, delete-orphan")

@@ -18,13 +18,19 @@ def creer_ticket(ticket: TicketCreate, db: Session = Depends(get_db),
 
 
 @router.get("/", response_model=list[TicketOut])
-def lister_tickets(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+def lister_tickets(
+    statut: str = None,
+    priorite: str = None,
+    sort: str = None,  # "date_asc" ou "date_desc"
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
     if current_user.role == RoleEnum.admin:
-        return crud_ticket.get_all_tickets(db)
+        return crud_ticket.get_all_tickets(db, statut, priorite, sort)
     elif current_user.role == RoleEnum.technicien:
-        return crud_ticket.get_tickets_by_technicien(db, current_user.id)
+        return crud_ticket.get_tickets_by_technicien(db, current_user.id, statut, priorite, sort)
     else:
-        return crud_ticket.get_tickets_by_employe(db, current_user.id)
+        return crud_ticket.get_tickets_by_employe(db, current_user.id, statut, priorite, sort)
 
 
 @router.get("/{ticket_id}", response_model=TicketOut)
@@ -77,3 +83,18 @@ def assigner_techniciens(ticket_id: int, technicien_ids: list[int], db: Session 
     crud_ticket.assign_techniciens(db, ticket_id, technicien_ids)
     notifier_assignation(db, ticket_id, technicien_ids)
     return {"message": "Techniciens assignés avec succès"}
+
+
+@router.delete("/{ticket_id}")
+def supprimer_ticket(ticket_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    ticket = crud_ticket.get_ticket(db, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket introuvable")
+
+    # Accès : admin ou employé s'il en est l'auteur ET statut = Ouvert
+    if current_user.role == RoleEnum.employe:
+        if ticket.id_employe != current_user.id or ticket.statut != "Ouvert":
+            raise HTTPException(status_code=403, detail="Seuls les tickets ouverts peuvent être supprimés par l’employé")
+
+    crud_ticket.delete_ticket(db, ticket_id)
+    return {"message": "Ticket supprimé avec succès"}

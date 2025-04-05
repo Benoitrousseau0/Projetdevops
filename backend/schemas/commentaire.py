@@ -1,12 +1,20 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
+# --- Base ---
 class CommentaireBase(BaseModel):
     contenu: str
 
+# --- Create ---
 class CommentaireCreate(CommentaireBase):
     id_ticket: int
 
+# --- Update ---
+class CommentaireUpdate(BaseModel):
+    contenu: Optional[str] = None
+
+# --- Out ---
 class CommentaireOut(CommentaireBase):
     id: int
     date_commentaire: datetime
@@ -15,6 +23,3 @@ class CommentaireOut(CommentaireBase):
 
     class Config:
         orm_mode = True
-
-class CommentaireUpdate(BaseModel):
-    contenu: str

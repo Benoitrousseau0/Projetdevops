@@ -5,16 +5,16 @@ from core.database import Base
 import enum
 
 class StatutEnum(str, enum.Enum):
-    ouvert = "Ouvert"
-    en_cours = "En cours"
-    resolu = "Résolu"
-    ferme = "Fermé"
+    ouvert = "ouvert"
+    en_cours = "en_cours"
+    resolu = "resolu"
+    ferme = "ferme"
 
 class PrioriteEnum(str, enum.Enum):
-    faible = "Faible"
-    moyenne = "Moyenne"
-    elevee = "Élevée"
-    critique = "Critique"
+    faible = "faible"
+    moyenne = "moyenne"
+    elevee = "elevee"
+    critique = "critique"
 
 class Ticket(Base):
     __tablename__ = "ticket"

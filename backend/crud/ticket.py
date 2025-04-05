@@ -10,6 +10,12 @@ def create_ticket(db: Session, ticket: TicketCreate, id_employe: int):
     db.add(db_ticket)
     db.commit()
     db.refresh(db_ticket)
+    print("📦 Ticket en base (CRUD):", {
+        "id": db_ticket.id,
+        "titre": db_ticket.titre,
+        "statut": db_ticket.statut,
+        "priorite": db_ticket.priorite
+    })
     return db_ticket
 
 
@@ -75,4 +81,10 @@ def delete_ticket(db: Session, ticket_id: int):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if ticket:
         db.delete(ticket)
+        db.commit()
+
+def remove_technicien(db: Session, ticket_id: int, technicien_id: int):
+    ticket_technicien = db.query(TicketTechnicien).filter(TicketTechnicien.id_ticket == ticket_id, TicketTechnicien.id_technicien == technicien_id).first()
+    if ticket_technicien:
+        db.delete(ticket_technicien)
         db.commit()

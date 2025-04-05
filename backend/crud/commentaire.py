@@ -15,11 +15,6 @@ def get_commentaires_by_ticket(db: Session, ticket_id: int):
 def get_commentaire_by_id(db: Session, commentaire_id: int):
     return db.query(Commentaire).filter(Commentaire.id == commentaire_id).first()
 
-def delete_commentaire(db: Session, commentaire_id: int):
-    commentaire = db.query(Commentaire).filter(Commentaire.id == commentaire_id).first()
-    if commentaire:
-        db.delete(commentaire)
-        db.commit()
 
 
 def delete_commentaire(db: Session, commentaire_id: int):

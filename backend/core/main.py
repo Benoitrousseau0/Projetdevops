@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import Base, engine
-from routes import auth, utilisateur, ticket, commentaire, notification, test
+from routes import auth, utilisateur, ticket, commentaire, notification, test, test_util
 
 # Création des tables à partir des modèles
 Base.metadata.create_all(bind=engine)
@@ -15,7 +15,7 @@ app = FastAPI(title="projet devops ticket")
 # Autoriser le frontend React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # à adapter selon ton environnement (localhost:3000 par exemple)
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,4 +28,10 @@ app.include_router(ticket.router)
 app.include_router(commentaire.router)
 app.include_router(notification.router)
 app.include_router(test.router)
+app.include_router(test_util.router)
 
+# bouton supp et modif commentaire
+# techniciens supp, meilleur interface   VVVV
+# plus d'options admin, dashboard info data ticket, voir +
+# creation user par admin pas d'inscriptions solo
+# fermé: on peut plus toucher, juste supp (seulement admin)

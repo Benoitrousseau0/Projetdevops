@@ -7,9 +7,11 @@ from utils.security import get_current_user
 
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
+
 @router.get("/", response_model=list[NotificationOut])
 def lister_notifications(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return get_notifications(db, current_user.id)
+
 
 @router.post("/{notif_id}/lu", response_model=NotificationOut)
 def marquer_lue(notif_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -18,7 +20,8 @@ def marquer_lue(notif_id: int, db: Session = Depends(get_db), current_user = Dep
         raise HTTPException(status_code=404, detail="Notification introuvable ou accès refusé")
     return notif
 
-@router.post("/lu-toutes")
+
+@router.post("/lu-toutes", response_model=dict)
 def marquer_toutes_lues(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     mark_all_as_read(db, current_user.id)
     return {"message": "Toutes les notifications ont été marquées comme lues"}

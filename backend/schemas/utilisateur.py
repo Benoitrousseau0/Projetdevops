@@ -67,3 +67,6 @@ class UtilisateurInDB(UtilisateurOut):
 class UtilisateurLogin(BaseModel):
     email: EmailStr
     mot_de_passe: str
+
+class UpdateUserRoleRequest(BaseModel):
+    new_role: RoleEnum

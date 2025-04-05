@@ -16,7 +16,8 @@ router = APIRouter(prefix="/utilisateurs", tags=["Utilisateurs"])
 
 
 @router.post("/", response_model=UtilisateurOut)
-def inscription(utilisateur: UtilisateurCreate, db: Session = Depends(get_db)):
+def inscription(utilisateur: UtilisateurCreate, db: Session = Depends(get_db),
+                current_user=Depends(require_role([RoleEnum.admin]))):  # Réservé aux admins
     existing = get_utilisateur_by_email(db, utilisateur.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")

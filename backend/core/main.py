@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import Base, engine
-from routes import auth, utilisateur, ticket, commentaire, notification, test, test_util
+from routes import auth, utilisateur, ticket, commentaire, notification, test, test_util, admin
 
 # Création des tables à partir des modèles
 Base.metadata.create_all(bind=engine)
@@ -29,6 +29,7 @@ app.include_router(commentaire.router)
 app.include_router(notification.router)
 app.include_router(test.router)
 app.include_router(test_util.router)
+app.include_router(admin.router)
 
 # bouton supp et modif commentaire
 # techniciens supp, meilleur interface   VVVV

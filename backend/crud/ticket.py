@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
-from models.ticket import Ticket
+from sqlalchemy import func
+from models.ticket import Ticket, StatutEnum
 from models.liaison import TicketTechnicien
 from schemas.ticket import TicketCreate, TicketUpdate
 
@@ -88,3 +88,31 @@ def remove_technicien(db: Session, ticket_id: int, technicien_id: int):
     if ticket_technicien:
         db.delete(ticket_technicien)
         db.commit()
+
+def get_tickets_by_status(db: Session, status: StatutEnum):
+    """Récupère les tickets selon le statut (ouvert, résolu, etc.)."""
+    tickets = db.query(Ticket).filter(Ticket.statut == status).all()
+    return tickets
+
+
+def get_avg_resolution_time_by_technician(db: Session):
+    # Calcul du temps moyen de résolution par technicien
+    result = db.query(
+        TicketTechnicien.id_technicien,  # Utilisation de la bonne colonne pour l'ID du technicien
+        func.avg(Ticket.date_mise_a_jour - Ticket.date_creation).label('avg_resolution_time')
+    ).join(
+        Ticket, Ticket.id == TicketTechnicien.id_ticket  # Jointure correcte entre Ticket et TicketTechnicien
+    ).group_by(TicketTechnicien.id_technicien).all()
+
+    # Transformation du résultat en une liste de dictionnaires
+    avg_resolution_time_by_technician = [
+        {"technicien_id": technicien_id, "avg_resolution_time": avg_resolution_time}
+        for technicien_id, avg_resolution_time in result
+    ]
+
+    return avg_resolution_time_by_technician
+
+def get_critical_tickets(db: Session):
+    """Récupère les tickets critiques basés sur leur priorité."""
+    critical_tickets = db.query(Ticket).filter(Ticket.priorite == 'critique').all()
+    return critical_tickets

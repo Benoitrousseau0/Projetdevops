@@ -3,9 +3,14 @@ from models.utilisateur import Utilisateur
 from schemas.utilisateur import UtilisateurCreate
 from utils.security import hash_password, verify_password
 from typing import Optional
+from models.utilisateur import RoleEnum
 
 def get_utilisateur_by_email(db: Session, email: str):
     return db.query(Utilisateur).filter(Utilisateur.email == email).first()
+
+def get_utilisateur_by_id(db: Session, user_id: int):
+    """Récupère un utilisateur par son ID."""
+    return db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
 
 def get_utilisateur(db: Session, user_id: int):
     return db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
@@ -42,3 +47,12 @@ def update_profil(db: Session, utilisateur: Utilisateur, nom: Optional[str], ema
     db.commit()
     db.refresh(utilisateur)
     return utilisateur
+
+def update_utilisateur_role(db: Session, user_id: int, new_role: RoleEnum):
+    utilisateur = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+    if utilisateur:
+        utilisateur.role = new_role
+        db.commit()
+        db.refresh(utilisateur)
+        return utilisateur
+    return None

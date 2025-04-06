@@ -8,5 +8,6 @@ python-dotenv
 passlib[bcrypt]
 python-jose
 email-validator
+cryptography
 pytest
 httpx

@@ -2,43 +2,39 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "projetdevops"
+        BACKEND_DIR = 'backend'
+        FRONTEND_DIR = 'frontend'
     }
 
     stages {
-        stage('Checkout code') {
-            steps {
-                git 'https://github.com/Benoitrousseau0/Projetdevops.git'
-            }
-        }
-
         stage('Build backend image') {
             steps {
-                dir('backend') {
-                    sh 'docker build -t backend-image .'
-                }
+                sh 'docker-compose build backend'
             }
         }
 
         stage('Run backend tests') {
             steps {
-                sh 'docker run --rm backend-image pytest'
+                sh 'docker-compose run --rm backend pytest'
             }
         }
 
         stage('Build frontend image') {
             steps {
-                dir('frontend') {
-                    sh 'docker build -t frontend-image .'
-                }
+                sh 'docker-compose build frontend'
             }
         }
 
         stage('Deploy full stack with Docker Compose') {
             steps {
-                sh 'docker-compose down || true'
-                sh 'docker-compose up -d --build'
+                sh 'docker-compose up -d'
             }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker-compose down'
         }
     }
 }

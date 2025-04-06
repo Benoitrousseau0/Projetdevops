@@ -1,12 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        BACKEND_DIR = 'backend'
-        FRONTEND_DIR = 'frontend'
-    }
-
     stages {
+        stage('Test Docker Access') {
+            steps {
+                sh 'docker ps'
+            }
+        }
+
         stage('Build backend image') {
             steps {
                 sh 'docker-compose build backend'

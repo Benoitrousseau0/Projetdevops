@@ -10,13 +10,18 @@ services:
       - db
     volumes:
       - ./backend:/app
-    restart: on-failure  # 🔁 Redémarre si ça plante (MySQL pas prêt)
+    restart: on-failure
     environment:
       - USE_DOCKER=true
       - DATABASE_URL_DOCKER=mysql+pymysql://root:root@db:3306/mydatabase
       - SECRET_KEY=changeme_super_secret_key
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=60
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build: ./frontend

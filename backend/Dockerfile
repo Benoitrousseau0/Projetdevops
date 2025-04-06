@@ -17,4 +17,4 @@ RUN chmod +x /wait-for-it.sh
 EXPOSE 8000
 
 # Utilise wait-for-it pour attendre que MySQL soit prêt
-CMD [ "db:3306", "--", "uvicorn", "core.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "core.main:app", "--host", "0.0.0.0", "--port", "8000"]

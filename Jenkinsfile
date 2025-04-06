@@ -1,41 +1,73 @@
 pipeline {
     agent any
 
+    environment {
+        COMPOSE_PROJECT_NAME = "projetdevops"
+    }
+
+    options {
+        checkoutToSubdirectory('projet')
+    }
+
     stages {
-        stage('Test Docker Access') {
+        stage('Checkout code') {
             steps {
-                sh 'docker ps'
+                dir('projet') {
+                    git branch: 'main', url: 'https://github.com/Benoitrousseau0/Projetdevops.git'
+                }
             }
         }
 
-        stage('Build backend image') {
+        stage('Setup environment') {
             steps {
-                sh 'docker-compose build backend'
+                dir('projet/backend') {
+                    echo '📁 Création du fichier .env à partir de .env.example.'
+                    bat 'copy .env.example .env'
+                }
+            }
+        }
+
+        stage('Build & Start Backend + DB') {
+            steps {
+                dir('projet') {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-hub-credentials',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )
+                    ]) {
+                        bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    }
+                    bat 'docker-compose up -d --build db backend'
+                }
             }
         }
 
         stage('Run backend tests') {
             steps {
-                sh 'docker-compose run --rm backend pytest'
+                dir('projet') {
+                    // Attend quelques secondes pour que backend soit prêt (attente du wait-for-it.sh dans le Dockerfile)
+                    bat 'docker-compose exec backend pytest'
+                }
             }
         }
 
-        stage('Build frontend image') {
+        stage('Build frontend') {
             steps {
-                sh 'docker-compose build frontend'
+                dir('projet') {
+                    bat 'docker-compose build frontend'
+                }
             }
         }
 
-        stage('Deploy full stack with Docker Compose') {
+        stage('Full stack deployment') {
             steps {
-                sh 'docker-compose up -d'
+                dir('projet') {
+                    bat 'docker-compose down'
+                    bat 'docker-compose up -d --build'
+                }
             }
-        }
-    }
-
-    post {
-        always {
-            sh 'docker-compose down'
         }
     }
 }

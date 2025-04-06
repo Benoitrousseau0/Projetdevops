@@ -19,9 +19,9 @@ services:
       - ACCESS_TOKEN_EXPIRE_MINUTES=60
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 2s
+      retries: 15
 
   frontend:
     build: ./frontend
